@@ -20,4 +20,4 @@ COPY --from=build /app/publish .
 # Tell ASP.NET to listen on port 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
-ENTRYPOINT ["dotnet", "InventoryApp.dll"]
+ENTRYPOINT ["dotnet", "InventoryManagement.dll"]
