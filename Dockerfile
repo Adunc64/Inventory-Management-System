@@ -6,7 +6,7 @@ EXPOSE 8080
 # Use .NET 8 SDK image to build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["InventoryApp.csproj", "./"]
+COPY ["InventoryManagement.csproj", "./"]
 RUN dotnet restore
 
 COPY . .
