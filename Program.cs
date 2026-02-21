@@ -44,8 +44,11 @@ app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
+
+    await DbInitializer.SeedRolesAndAdminAsync(services);
 }
 
 app.Urls.Add("http://0.0.0.0:8080");
