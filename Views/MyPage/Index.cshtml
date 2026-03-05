@@ -1,0 +1,25 @@
+@model List<InventoryManagement.Models.Inventory>
+
+<h2>My Inventories</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var inventory in Model)
+        {
+            <tr>
+                <td>
+                    <a href="#">
+                        @inventory.Title
+                    </a>
+                </td>
+                <td>@inventory.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>

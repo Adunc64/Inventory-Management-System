@@ -1,3 +1,4 @@
+using InventoryManagement.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace InventoryManagement.Data
         }
 
         // Add DbSet properties for your entities here
+        public DbSet<Inventory> Inventories { get; set; }
         // ...existing code...
     }
 }
