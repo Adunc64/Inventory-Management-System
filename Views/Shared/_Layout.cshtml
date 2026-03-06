@@ -24,7 +24,7 @@
                             <partial name="_LoginPartial" />
                         </li>
 
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="MyPage" asp-action="Index">My Page</a>

@@ -19,18 +19,36 @@ namespace InventoryManagement.Controllers
             _userManager = userManager;
         }
 
+        //My Page
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _userManager.GetUserId(User)!;   // ✅ this is the GUID Id, not email
 
-            if (user == null)
-            {
-                return Challenge(); // Redirect to login if user is not authenticated
-            }
+            var list = await _context.Inventories
+                .Where(i => i.OwnerId == userId)
+                .ToListAsync();
 
-            var myInevntories = await _context.Inventories.Where(i => i.OwnerId == user.Id).ToListAsync();
+            return View(list);
+        }
 
-            return View(myInevntories);
+        // GET: MyPage/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: MyPage/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Inventory inventory)
+        {
+            var userId = _userManager.GetUserId(User)!;
+
+            inventory.OwnerId = userId;                
+            _context.Inventories.Add(inventory);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
