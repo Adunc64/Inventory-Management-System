@@ -2,28 +2,39 @@
 
 <h2>My Inventories</h2>
 
-<a asp-action="Create" class="btn btn-success mb-3">
-    + Create Inventory
-</a>
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">
+        + Create Inventory
+    </a>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var inventory in Model)
+    <button type="submit" form="deleteForm" class="btn btn-danger">
+        Delete Selected
+    </button>
+</div>
+
+<form asp-action="DeleteSelected" method="post" id="deleteForm">  <!-- form for batch delete -->
+    @Html.AntiForgeryToken()
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:48px;"></th>
+                <th>Title</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @foreach (var item in Model)
         {
             <tr>
                 <td>
-                    <a href="#">
-                        @inventory.Title
-                    </a>
+                    <input type="checkbox" name="selectedIds" value="@item.Id" />
                 </td>
-                <td>@inventory.Description</td>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</form>

@@ -20,17 +20,42 @@ namespace InventoryManagement.Controllers
         }
 
         //My Page
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            var userId = _userManager.GetUserId(User)!;   // ✅ this is the GUID Id, not email
+            var user = await _userManager.GetUserAsync(User);
 
-            var list = await _context.Inventories
-                .Where(i => i.OwnerId == userId)
-                .ToListAsync();
+            if (user == null)
+            {
+                return Challenge();
+            }
 
-            return View(list);
+            ViewData["TitleSort"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["DescriptionSort"] = sortOrder == "desc" ? "desc_desc" : "desc";
+
+            var inventories = _context.Inventories
+                .Where(i => i.OwnerId == user.Id);
+
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    inventories = inventories.OrderByDescending(i => i.Title);
+                    break;
+
+                case "desc":
+                    inventories = inventories.OrderBy(i => i.Description);
+                    break;
+
+                case "desc_desc":
+                    inventories = inventories.OrderByDescending(i => i.Description);
+                    break;
+
+                default:
+                    inventories = inventories.OrderBy(i => i.Title);
+                    break;
+            }
+
+            return View(await inventories.ToListAsync());
         }
-
         // GET: MyPage/Create
         public IActionResult Create()
         {
@@ -48,6 +73,26 @@ namespace InventoryManagement.Controllers
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: MyPage/DeleteSelected
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSelected(List<int> selectedIds)
+        {
+            var userId = await _userManager.GetUserAsync(User);
+
+            if (userId == null)
+            {
+                return Challenge();
+            }
+
+            var inventoriesToDelete = await _context.Inventories.Where(i => selectedIds.Contains(i.Id) && i.OwnerId == userId.Id).ToListAsync();
+
+            _context.Inventories.RemoveRange(inventoriesToDelete);
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }
