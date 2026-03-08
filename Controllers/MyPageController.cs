@@ -20,7 +20,7 @@ namespace InventoryManagement.Controllers
         }
 
         //My Page
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -32,9 +32,22 @@ namespace InventoryManagement.Controllers
             ViewData["TitleSort"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["DescriptionSort"] = sortOrder == "desc" ? "desc_desc" : "desc";
 
+            ViewData["CurrentFilter"] = searchString;
+
             var inventories = _context.Inventories
                 .Where(i => i.OwnerId == user.Id);
 
+            //Search
+            searchString = searchString?.Trim() ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                inventories = inventories.Where(i =>
+                    EF.Functions.ILike(i.Title!, $"%{searchString}%") ||
+                    (i.Description != null && EF.Functions.ILike(i.Description, $"%{searchString}%"))
+                );
+            }
+
+            //Sort
             switch (sortOrder)
             {
                 case "title_desc":
@@ -56,6 +69,7 @@ namespace InventoryManagement.Controllers
 
             return View(await inventories.ToListAsync());
         }
+
         // GET: MyPage/Create
         public IActionResult Create()
         {

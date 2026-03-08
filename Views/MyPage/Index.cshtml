@@ -2,25 +2,49 @@
 
 <h2>My Inventories</h2>
 
+<!-- Search form -->
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="searchString"
+               value="@(ViewData["CurrentFilter"] as string)"
+               class="form-control"
+               placeholder="Search inventories..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
 <div class="mb-3">
-    <a asp-action="Create" class="btn btn-success">
-        + Create Inventory
-    </a>
+    <a asp-action="Create" class="btn btn-success">+ Create Inventory</a>
 
     <button type="submit" form="deleteForm" class="btn btn-danger">
         Delete Selected
     </button>
 </div>
 
-<form asp-action="DeleteSelected" method="post" id="deleteForm">  <!-- form for batch delete -->
+<form asp-action="DeleteSelected" method="post" id="deleteForm">
     @Html.AntiForgeryToken()
 
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
                 <th style="width:48px;"></th>
-                <th>Title</th>
-                <th>Description</th>
+
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@(ViewData["TitleSort"] as string)"
+                       asp-route-searchString="@(ViewData["CurrentFilter"] as string)">
+                        Title
+                    </a>
+                </th>
+
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@(ViewData["DescriptionSort"] as string)"
+                       asp-route-searchString="@(ViewData["CurrentFilter"] as string)">
+                        Description
+                    </a>
+                </th>
             </tr>
         </thead>
 
